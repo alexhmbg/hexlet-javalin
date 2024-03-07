@@ -2,28 +2,51 @@ package org.example.hexlet;
 
 import io.javalin.Javalin;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+import org.example.hexlet.dto.courses.CoursePage;
+import org.example.hexlet.model.Course;
+import org.example.hexlet.dto.courses.CoursesPage;
+
 public class HelloWorld {
     public static void main(String[] args) {
-        // Создаем приложение
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
         });
-        // Описываем, что загрузится по адресу /
-        app.get("/", ctx -> ctx.result("Hello World"));
-        app.get("/hello", ctx -> {
-            var name = ctx.queryParamAsClass("name", String.class).getOrDefault("World");;
-            ctx.result("Hello, " + name + "!");
+
+        List<Course> courses = new ArrayList<>();
+        var course1 = new Course(101L, "SQL", "Course about SQL");
+        var course2 = new Course(102L,"HTTP", "Course about HTTP");
+        var course3 = new Course(103L, "DB", "Course about DB");
+        courses.add(course1);
+        courses.add(course2);
+        courses.add(course3);
+
+        app.get("/courses", ctx -> {
+            var header = "Курсы по программированию";
+            var page = new CoursesPage(courses, header);
+            ctx.render("courses/index.jte", Collections.singletonMap("page", page));
         });
 
         app.get("/courses/{id}", ctx -> {
-            ctx.result("Course ID: " + ctx.pathParam("id"));
+            var id = ctx.pathParamAsClass("id", Long.class).getOrDefault(100L);
+
+            Course result = new Course(100L, "Course", "Not found");
+
+            for (var course : courses) {
+                if (course.getId().equals(id)) {
+                    result = course;
+                }
+            }
+
+            var page = new CoursePage(result);
+            ctx.render("courses/show.jte", Collections.singletonMap("page", page));
         });
 
-        app.get("users/{id}/post/{postId}", ctx -> {
-            ctx.result("User ID: " + ctx.pathParam("id"));
-            ctx.result("User Post ID: " + ctx.pathParam("postId"));
-        });
 
-        app.start(7070); // Стартуем веб-сервер
+        app.start(7070);
     }
 }

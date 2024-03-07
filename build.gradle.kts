@@ -2,8 +2,11 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    id("java")
     application
+    id("checkstyle")
+    id("io.freefair.lombok") version "8.3"
+    id("com.github.ben-manes.versions") version "0.47.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 application {
@@ -18,15 +21,18 @@ repositories {
 }
 
 dependencies {
-    // Версии зависимостей могут отличаться
-    // Здесь мы сразу подключаем зависимости,
-    // которые понадобятся во время обучения
-    implementation("io.javalin:javalin:5.6.1")
-    implementation("org.slf4j:slf4j-simple:2.0.7")
-    implementation("io.javalin:javalin-rendering:5.6.0")
-    implementation("gg.jte:jte:3.0.1")
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("com.h2database:h2:2.2.224")
+    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
+    implementation("org.apache.commons:commons-text:1.11.0")
+    implementation("gg.jte:jte:3.1.9")
+    implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("io.javalin:javalin:5.6.3")
+    implementation("io.javalin:javalin-rendering:5.6.3")
+
+    testImplementation("org.assertj:assertj-core:3.25.2")
+    testImplementation(platform("org.junit:junit-bom:5.10.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
 }
 
 tasks.test {
