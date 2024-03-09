@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Objects;
 
 import org.example.hexlet.dto.courses.CoursePage;
+import org.example.hexlet.dto.users.UserPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.dto.courses.CoursesPage;
+import org.example.hexlet.model.User;
 
 public class HelloWorld {
     public static void main(String[] args) {
@@ -24,6 +26,13 @@ public class HelloWorld {
         courses.add(course1);
         courses.add(course2);
         courses.add(course3);
+
+        app.get("/users/{name}", ctx -> {
+            var name = ctx.pathParam("name");
+            var user = new User(100, name);
+            var page = new UserPage(user);
+            ctx.render("users/index.jte", Collections.singletonMap("page", page));
+        });
 
         app.get("/courses", ctx -> {
             var header = "Курсы по программированию";
