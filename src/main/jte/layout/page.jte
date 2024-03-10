@@ -1,6 +1,3 @@
-@import gg.jte.Content
-@param Content content
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -11,8 +8,15 @@
 <body>
 <p>
     <a href="/users">Users</a>
+</p>
+<p>
+    <a href="/users/build">Add User</a>
+</p>
+<p>
     <a href="/courses">Courses</a>
 </p>
-${content}
+<p>
+    <a href="/courses/build">Add Course</a>
+</p>
 </body>
 </html>

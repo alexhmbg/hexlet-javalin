@@ -1,5 +1,5 @@
-@import org.example.hexlet.dto.users.UserPage
-@param UserPage page
+@import org.example.hexlet.dto.users.UsersPage
+@param UsersPage page
 
 <!doctype html>
 <html lang="en">
@@ -9,8 +9,10 @@
     <title>Hexlet Javalin Example</title>
 </head>
 <body>
-<p>
-   ${page.getUser().getName()}
-</p>
+    <p>
+        @for(var user : page.getUsers())
+            <div>${user.getName()}</div>
+        @endfor
+    </p>
 </body>
 </html>

@@ -5,13 +5,15 @@ import io.javalin.Javalin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.dto.users.UserPage;
+import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.dto.courses.CoursesPage;
 import org.example.hexlet.model.User;
+import org.example.hexlet.repository.CourseRepository;
+import org.example.hexlet.repository.UserRepository;
 
 public class HelloWorld {
     public static void main(String[] args) {
@@ -19,42 +21,67 @@ public class HelloWorld {
             config.plugins.enableDevLogging();
         });
 
-        List<Course> courses = new ArrayList<>();
-        var course1 = new Course(101L, "SQL", "Course about SQL");
-        var course2 = new Course(102L,"HTTP", "Course about HTTP");
-        var course3 = new Course(103L, "DB", "Course about DB");
-        courses.add(course1);
-        courses.add(course2);
-        courses.add(course3);
+        app.get("/", ctx -> {
+            ctx.render("layout/page.jte");
+        });
 
-        app.get("/users/{name}", ctx -> {
-            var name = ctx.pathParam("name");
-            var user = new User(100, name);
-            var page = new UserPage(user);
+        app.get("/users", ctx -> {
+            var page = new UsersPage(UserRepository.getEntities());
             ctx.render("users/index.jte", Collections.singletonMap("page", page));
         });
 
+        app.get("/users/build", ctx -> {
+            ctx.render("users/build.jte");
+        });
+
+        app.post("/users", ctx -> {
+            var name = ctx.formParam("name");
+            var email = ctx.formParam("email");
+            var password = ctx.formParam("password");
+            var passwordConfirmation = ctx.formParam("passwordConfirmation");
+
+            var user = new User(name, email, password);
+            UserRepository.save(user);
+            ctx.redirect("/users");
+        });
+
         app.get("/courses", ctx -> {
-            var header = "Курсы по программированию";
-            var page = new CoursesPage(courses, header);
+            var term = ctx.queryParam("term");
+            List<Course> resultCourses;
+
+            if (term == null) {
+                resultCourses = CourseRepository.getEntities().stream().toList();
+            } else {
+                resultCourses = CourseRepository.getEntities().stream()
+                        .filter(n -> n.getName().equals(term) ||
+                                n.getDescription().contains(term))
+                        .toList();
+            }
+
+            var page = new CoursesPage(resultCourses, term);
             ctx.render("courses/index.jte", Collections.singletonMap("page", page));
+        });
+
+        app.get("/courses/build", ctx -> {
+            ctx.render("courses/build.jte");
+        });
+
+        app.post("/courses", ctx -> {
+            var name = ctx.formParam("name");
+            var description = ctx.formParam("description");
+
+            var course = new Course(name, description);
+            CourseRepository.save(course);
+            ctx.redirect("/courses");
         });
 
         app.get("/courses/{id}", ctx -> {
             var id = ctx.pathParamAsClass("id", Long.class).getOrDefault(100L);
+            var course = CourseRepository.getEntities().stream().filter(c -> c.getId().equals(id)).findFirst().orElse(null);
+            var page = new CoursePage(course);
 
-            Course result = new Course(100L, "Course", "Not found");
-
-            for (var course : courses) {
-                if (course.getId().equals(id)) {
-                    result = course;
-                }
-            }
-
-            var page = new CoursePage(result);
             ctx.render("courses/show.jte", Collections.singletonMap("page", page));
         });
-
 
         app.start(7070);
     }
