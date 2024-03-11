@@ -35,8 +35,8 @@ public class HelloWorld {
         });
 
         app.post("/users", ctx -> {
-            var name = ctx.formParam("name");
-            var email = ctx.formParam("email");
+            var name = ctx.formParam("name").trim();
+            var email = ctx.formParam("email").trim().toLowerCase();
             var password = ctx.formParam("password");
             var passwordConfirmation = ctx.formParam("passwordConfirmation");
 
