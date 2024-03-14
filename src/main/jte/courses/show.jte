@@ -9,7 +9,7 @@
 </head>
 <body>
 <h1>${page.getCourse().getName()}</h1>
-@if(page.getCourse().getId().equals(100L))
+@if(page.getCourse().getId().equals(0L))
     <p>Course not found</p>
 @else
         <div>

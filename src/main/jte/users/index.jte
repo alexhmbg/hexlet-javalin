@@ -1,3 +1,4 @@
+@import org.example.hexlet.NamedRoutes
 @import org.example.hexlet.dto.users.UsersPage
 @param UsersPage page
 
@@ -10,9 +11,13 @@
 </head>
 <body>
     <p>
-        @for(var user : page.getUsers())
-            <div>${user.getName()}</div>
-        @endfor
+        @if(page.getUsers().isEmpty())
+            <p>Users not found</p>
+        @else
+            @for(var user : page.getUsers())
+                <a href="${NamedRoutes.userPath(user.getId())}">${user.getName()}</a>
+            @endfor
+        @endif
     </p>
 </body>
 </html>
