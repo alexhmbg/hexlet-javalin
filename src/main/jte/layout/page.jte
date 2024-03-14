@@ -1,3 +1,5 @@
+@import org.example.hexlet.NamedRoutes
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,16 +9,16 @@
 </head>
 <body>
 <p>
-    <a href="/users">Users</a>
+    <a href="${NamedRoutes.usersPath()}">Users</a>
 </p>
 <p>
-    <a href="/users/build">Add User</a>
+    <a href="${NamedRoutes.buildUserPath()}">Add User</a>
 </p>
 <p>
-    <a href="/courses">Courses</a>
+    <a href="${NamedRoutes.coursesPath()}">Courses</a>
 </p>
 <p>
-    <a href="/courses/build">Add Course</a>
+    <a href="${NamedRoutes.buildCoursePath()}">Add Course</a>
 </p>
 </body>
 </html>

@@ -28,17 +28,17 @@ public class HelloWorld {
             ctx.render("layout/page.jte");
         });
 
-        app.get("/users", ctx -> {
+        app.get(NamedRoutes.usersPath(), ctx -> {
             var page = new UsersPage(UserRepository.getEntities());
             ctx.render("users/index.jte", Collections.singletonMap("page", page));
         });
 
-        app.get("/users/build", ctx -> {
+        app.get(NamedRoutes.buildUserPath(), ctx -> {
             var page = new BuildUserPage();
             ctx.render("users/build.jte", Collections.singletonMap("page", page));
         });
 
-        app.post("/users", ctx -> {
+        app.post(NamedRoutes.usersPath(), ctx -> {
             var name = ctx.formParam("name");
             var email = ctx.formParam("email");
 
@@ -49,14 +49,14 @@ public class HelloWorld {
                         .get();
                 var user = new User(name, email, password);
                 UserRepository.save(user);
-                ctx.redirect("/users");
+                ctx.redirect(NamedRoutes.usersPath());
             } catch (ValidationException e) {
                 var page = new BuildUserPage(name, email, e.getErrors());
                 ctx.render("users/build.jte", Collections.singletonMap("page", page));
             }
         });
 
-        app.get("/courses", ctx -> {
+        app.get(NamedRoutes.coursesPath(), ctx -> {
             var term = ctx.queryParam("term");
             List<Course> resultCourses;
 
@@ -73,12 +73,12 @@ public class HelloWorld {
             ctx.render("courses/index.jte", Collections.singletonMap("page", page));
         });
 
-        app.get("/courses/build", ctx -> {
+        app.get(NamedRoutes.buildCoursePath(), ctx -> {
             var page = new BuildCoursePage();
             ctx.render("courses/build.jte", Collections.singletonMap("page", page));
         });
 
-        app.post("/courses", ctx -> {
+        app.post(NamedRoutes.coursesPath(), ctx -> {
             try {
                 var name = ctx.formParamAsClass("name", String.class)
                         .check(value -> value.length() > 2, "Название курса должно быть длиннее 2 символов")
@@ -88,7 +88,7 @@ public class HelloWorld {
                         .get();
                 var course = new Course(name, description);
                 CourseRepository.save(course);
-                ctx.redirect("/courses");
+                ctx.redirect(NamedRoutes.coursesPath());
             } catch (ValidationException e) {
                 var name = ctx.formParam("name");
                 var description = ctx.formParam("description");
@@ -97,9 +97,14 @@ public class HelloWorld {
             }
         });
 
-        app.get("/courses/{id}", ctx -> {
-            var id = ctx.pathParamAsClass("id", Long.class).getOrDefault(100L);
-            var course = CourseRepository.getEntities().stream().filter(c -> c.getId().equals(id)).findFirst().orElse(null);
+        app.get(NamedRoutes.coursePath("{id}"), ctx -> {
+            var id = ctx.pathParamAsClass("id", Long.class).getOrDefault(0L);
+            var course = CourseRepository
+                    .getEntities()
+                    .stream()
+                    .filter(c -> c.getId().equals(id))
+                    .findFirst()
+                    .orElse(null);
             var page = new CoursePage(course);
 
             ctx.render("courses/show.jte", Collections.singletonMap("page", page));
