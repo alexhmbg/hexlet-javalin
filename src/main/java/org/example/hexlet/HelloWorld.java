@@ -2,24 +2,10 @@ package org.example.hexlet;
 
 import io.javalin.Javalin;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
-import io.javalin.http.NotFoundResponse;
-import io.javalin.validation.ValidationException;
+import org.example.hexlet.dto.MainPage;
 import org.example.hexlet.controller.CoursesController;
 import org.example.hexlet.controller.UsersController;
-import org.example.hexlet.dto.courses.BuildCoursePage;
-import org.example.hexlet.dto.courses.CoursePage;
-import org.example.hexlet.dto.users.BuildUserPage;
-import org.example.hexlet.dto.users.UserPage;
-import org.example.hexlet.dto.users.UsersPage;
-import org.example.hexlet.model.Course;
-import org.example.hexlet.dto.courses.CoursesPage;
-import org.example.hexlet.model.User;
-import org.example.hexlet.repository.CourseRepository;
-import org.example.hexlet.repository.UserRepository;
 
 public class HelloWorld {
     public static void main(String[] args) {
@@ -28,7 +14,10 @@ public class HelloWorld {
         });
 
         app.get("/", ctx -> {
-            ctx.render("layout/page.jte");
+            var visited = Boolean.valueOf(ctx.cookie("visited"));
+            var page = new MainPage(visited);
+            ctx.render("index.jte", Collections.singletonMap("page", page));
+            ctx.cookie("visited", String.valueOf(true));
         });
 
         app.get(NamedRoutes.usersPath(), UsersController::index);
