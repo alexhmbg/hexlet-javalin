@@ -3,6 +3,8 @@ package org.example.hexlet;
 import io.javalin.Javalin;
 
 import java.util.Collections;
+
+import org.example.hexlet.controller.SessionsController;
 import org.example.hexlet.dto.MainPage;
 import org.example.hexlet.controller.CoursesController;
 import org.example.hexlet.controller.UsersController;
@@ -14,10 +16,8 @@ public class HelloWorld {
         });
 
         app.get("/", ctx -> {
-            var visited = Boolean.valueOf(ctx.cookie("visited"));
-            var page = new MainPage(visited);
+            var page = new MainPage(ctx.sessionAttribute("currentUser"));
             ctx.render("index.jte", Collections.singletonMap("page", page));
-            ctx.cookie("visited", String.valueOf(true));
         });
 
         app.get(NamedRoutes.usersPath(), UsersController::index);
@@ -35,6 +35,13 @@ public class HelloWorld {
 //      app.get("/courses/{id}/edit", CoursesController::edit);
 //      app.patch("/courses/{id}", CoursesController::update);
 //      app.delete("/courses/{id}", CoursesController::destroy);
+
+        // Отображение формы логина
+        app.get("/sessions/build", SessionsController::build);
+        // Процесс логина
+        app.post("/sessions", SessionsController::create);
+        // Процесс выхода из аккаунта
+        app.delete("/sessions", SessionsController::destroy);
 
         app.start(7070);
     }
