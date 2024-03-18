@@ -1,23 +1,23 @@
 package org.example.hexlet.controller;
 
-import java.util.Collections;
-
-import io.javalin.validation.ValidationException;
-import org.example.hexlet.NamedRoutes;
-import org.example.hexlet.dto.users.BuildUserPage;
 import org.example.hexlet.dto.users.UserPage;
 import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.User;
 import org.example.hexlet.repository.UserRepository;
+import org.example.hexlet.util.NamedRoutes;
 
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
+import static io.javalin.rendering.template.TemplateUtil.model;
 
+/**
+ * UsersController.
+ */
 public class UsersController {
     public static void index(Context ctx) {
         var users = UserRepository.getEntities();
         var page = new UsersPage(users);
-        ctx.render("users/index.jte", Collections.singletonMap("page", page));
+        ctx.render("users/index.jte", model("page", page));
     }
 
     public static void show(Context ctx) {
@@ -25,31 +25,21 @@ public class UsersController {
         var user = UserRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
         var page = new UserPage(user);
-        ctx.render("users/show.jte", Collections.singletonMap("page", page));
+        ctx.render("users/show.jte", model("page", page));
     }
 
     public static void build(Context ctx) {
-
-        var page = new BuildUserPage();
-        ctx.render("users/build.jte", Collections.singletonMap("page", page));
+        ctx.render("users/build.jte");
     }
 
     public static void create(Context ctx) {
         var name = ctx.formParam("name");
         var email = ctx.formParam("email");
+        var password = ctx.formParam("password");
 
-        try {
-            var passwordConfirmation = ctx.formParam("passwordConfirmation");
-            var password = ctx.formParamAsClass("password", String.class)
-                    .check(value -> value.equals(passwordConfirmation), "Пароли не совпадают")
-                    .get();
-            var user = new User(name, email, password);
-            UserRepository.save(user);
-            ctx.redirect(NamedRoutes.usersPath());
-        } catch (ValidationException e) {
-            var page = new BuildUserPage(name, email, e.getErrors());
-            ctx.render("users/build.jte", Collections.singletonMap("page", page));
-        }
+        var user = new User(name, email, password);
+        UserRepository.save(user);
+        ctx.redirect(NamedRoutes.usersPath());
     }
 
     public static void edit(Context ctx) {
@@ -57,7 +47,7 @@ public class UsersController {
         var user = UserRepository.find(id)
                 .orElseThrow(() -> new NotFoundResponse("Entity with id = " + id + " not found"));
         var page = new UserPage(user);
-        ctx.render("users/edit.jte", Collections.singletonMap("page", page));
+        ctx.render("users/edit.jte", model("page", page));
     }
 
     public static void update(Context ctx) {

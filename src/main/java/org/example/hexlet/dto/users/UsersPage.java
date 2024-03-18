@@ -1,14 +1,14 @@
 package org.example.hexlet.dto.users;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.example.hexlet.model.User;
-
 import java.util.List;
 
+import org.example.hexlet.model.User;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
 public class UsersPage {
-    private List<User> users;
+    public List<User> users;
 }
