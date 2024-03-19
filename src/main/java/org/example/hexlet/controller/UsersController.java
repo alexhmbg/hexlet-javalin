@@ -10,9 +10,6 @@ import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
-/**
- * UsersController.
- */
 public class UsersController {
     public static void index(Context ctx) {
         var users = UserRepository.getEntities();
